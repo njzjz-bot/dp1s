@@ -22,7 +22,7 @@ logging() {
 }
 logging "This script will automatically download and install DeePMD-kit (${DEEPMD_VERSION:-"lastest version"}) for you."
 
-DP1S_HOME=~/.dp1s
+DP1S_HOME=${DP1S_HOME:-~/.dp1s}
 export PIXI_HOME=$DP1S_HOME
 DP1S_BIN_PATH=$DP1S_HOME/bin
 
@@ -42,6 +42,9 @@ fi
 # 2. install pixi
 ((progress++))
 logging "Install pixi"
+if [[ -v DP1S_NO_PATH_UPDATE ]]; then
+  export PIXI_NO_PATH_UPDATE=1
+fi
 
 curl -fsSL https://pixi.sh/install.sh | sh
 
@@ -78,5 +81,10 @@ $DP1S_BIN_PATH/mpirun --version
 logging "Remove pixi to prevent conflict"
 rm -f $DP1S_BIN_PATH/pixi
 
-logging "DeePMD-kit have been installed to ${DP1S_BIN_PATH}. Restart the shell to use dp, lmp, and mpirun."
+if [[ -v DP1S_NO_PATH_UPDATE ]]; then
+  logging "DeePMD-kit have been installed to ${DP1S_BIN_PATH}. To activate the environment, add the following script before your script:"
+  logging "export PATH=${DP1S_BIN_PATH}:\$PATH"
+else
+  logging "DeePMD-kit have been installed to ${DP1S_BIN_PATH}. Restart the shell to use dp, lmp, and mpirun."
+fi
 
