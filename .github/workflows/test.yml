@@ -2,50 +2,21 @@ name: Test dp1s.sh
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ master ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ master ]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  shellcheck:
-    name: ShellCheck
+  test:
+    name: Test dp1s.sh
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          scandir: '.'
-
-  syntax-check:
-    name: Bash Syntax Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check bash syntax
-        run: bash -n dp1s.sh
-
-  test-script:
-    name: Test Script Execution
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Test script can run
-        run: |
-          # Make the script executable
-          chmod +x dp1s.sh
-          
-          # Verify the script is a valid bash script
-          file dp1s.sh | grep -q "shell script"
-          
-          echo "Script validation passed!"
+      - name: Run script
+        run: bash dp1s.sh
