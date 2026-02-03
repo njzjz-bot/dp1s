@@ -72,5 +72,10 @@ $DP1S_BIN_PATH/dp --version
 echo info styles pair | $DP1S_BIN_PATH/lmp  -log none 2>/dev/null | grep -n --color "\bdeepmd\b"
 $DP1S_BIN_PATH/mpirun --version
 
+# 5. Remove pixi
+((progress++))
+logging "Remove pixi to prevent conflict"
+rm -f $DP1S_BIN_PATH/pixi
+
 logging "DeePMD-kit have been installed to ${DP1S_BIN_PATH}. Restart the shell to use dp, lmp, and mpirun."
 
