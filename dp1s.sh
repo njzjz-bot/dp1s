@@ -85,7 +85,9 @@ $DP1S_BIN_PATH/pixi global install \
 ((progress++))
 logging "Check the installation"
 $DP1S_BIN_PATH/dp --version
-echo info styles pair | $DP1S_BIN_PATH/lmp  -log none 2>/dev/null | grep -n --color "\bdeepmd\b"
+lmp_styles=$(echo info styles pair | $DP1S_BIN_PATH/lmp -log none)
+echo "$lmp_styles"
+echo "$lmp_styles" | grep -n --color "\bdeepmd\b"
 $DP1S_BIN_PATH/mpirun --version
 
 # 5. Remove pixi
