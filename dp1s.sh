@@ -29,15 +29,27 @@ DP1S_BIN_PATH=$DP1S_HOME/bin
 # 1. check the location of the machine
 ((progress++)) || :
 
-country=$(curl -s https://ipinfo.io/country)
-logging "Location: ${country}"
-if [ "$country" = "CN" ]
-then
-  conda_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/"
-  export PIXI_REPOURL=https://ghfast.top/https://github.com/prefix-dev/pixi
+if [[ -v DP1S_COUNTRY ]]; then
+  country=${DP1S_COUNTRY}
 else
-  conda_channel="conda-forge"
+  country=$(curl -fsSL --connect-timeout 5 --max-time 10 https://ipinfo.io/country || :)
 fi
+
+case "${country}" in
+  CN)
+    logging "Location: ${country}"
+    conda_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/"
+    export PIXI_REPOURL=https://ghfast.top/https://github.com/prefix-dev/pixi
+    ;;
+  "")
+    logging "Location detection failed; falling back to conda-forge"
+    conda_channel="conda-forge"
+    ;;
+  *)
+    logging "Location: ${country}"
+    conda_channel="conda-forge"
+    ;;
+esac
 
 # 2. install pixi
 ((progress++))
@@ -73,7 +85,12 @@ $DP1S_BIN_PATH/pixi global install \
 ((progress++))
 logging "Check the installation"
 $DP1S_BIN_PATH/dp --version
-echo info styles pair | $DP1S_BIN_PATH/lmp  -log none 2>/dev/null | grep -n --color "\bdeepmd\b"
+lmp_styles=$(echo info styles pair | $DP1S_BIN_PATH/lmp -log none)
+if ! echo "$lmp_styles" | grep -q "\bdeepmd\b"; then
+  echo "$lmp_styles"
+  echo "deepmd pair style was not found in LAMMPS pair styles" >&2
+  exit 1
+fi
 $DP1S_BIN_PATH/mpirun --version
 
 # 5. Remove pixi
