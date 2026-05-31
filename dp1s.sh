@@ -86,8 +86,11 @@ $DP1S_BIN_PATH/pixi global install \
 logging "Check the installation"
 $DP1S_BIN_PATH/dp --version
 lmp_styles=$(echo info styles pair | $DP1S_BIN_PATH/lmp -log none)
-echo "$lmp_styles"
-echo "$lmp_styles" | grep -n --color "\bdeepmd\b"
+if ! echo "$lmp_styles" | grep -q "\bdeepmd\b"; then
+  echo "$lmp_styles"
+  echo "deepmd pair style was not found in LAMMPS pair styles" >&2
+  exit 1
+fi
 $DP1S_BIN_PATH/mpirun --version
 
 # 5. Remove pixi
