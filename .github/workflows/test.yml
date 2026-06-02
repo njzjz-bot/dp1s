@@ -12,8 +12,18 @@ permissions:
 
 jobs:
   test:
-    name: Test dp1s.sh
+    name: Test dp1s.sh (${{ matrix.name }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: default
+            country: ""
+          - name: China
+            country: CN
+    env:
+      DP1S_COUNTRY: ${{ matrix.country }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
