@@ -35,22 +35,21 @@ else
   country=$(curl -fsSL --connect-timeout 5 --max-time 10 https://ipinfo.io/country || :)
 fi
 
+deepmd_rc_channel="conda-forge/label/deepmd-kit_rc"
+
 case "${country}" in
   CN)
     logging "Location: ${country}"
     conda_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/"
-    deepmd_rc_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/label/deepmd-kit_rc/"
     export PIXI_REPOURL=https://ghfast.top/https://github.com/prefix-dev/pixi
     ;;
   "")
     logging "Location detection failed; falling back to conda-forge"
     conda_channel="conda-forge"
-    deepmd_rc_channel="conda-forge/label/deepmd-kit_rc"
     ;;
   *)
     logging "Location: ${country}"
     conda_channel="conda-forge"
-    deepmd_rc_channel="conda-forge/label/deepmd-kit_rc"
     ;;
 esac
 
@@ -113,4 +112,3 @@ if [[ -v DP1S_NO_PATH_UPDATE ]]; then
 else
   logging "DeePMD-kit have been installed to ${DP1S_BIN_PATH}. Restart the shell to use dp, lmp, and mpirun."
 fi
-

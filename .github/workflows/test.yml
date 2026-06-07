@@ -33,7 +33,7 @@ jobs:
           - name: China RC
             country: CN
             rc: true
-            expected_channels: "--channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/ --channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/label/deepmd-kit_rc/ --channel=njzjz"
+            expected_channels: "--channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/ --channel=conda-forge/label/deepmd-kit_rc --channel=njzjz"
     env:
       DP1S_COUNTRY: ${{ matrix.country }}
       DP1S_NO_PATH_UPDATE: 1
