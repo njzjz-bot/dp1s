@@ -26,4 +26,3 @@ The installation script has several options that can be manipulated through envi
 - `DP1S_NO_PATH_UPDATE`: If set the `$PATH` will not be updated to add DeePMD-kit to it.
 - `DP1S_DEEPMD_RC`: If set, add the `conda-forge/label/deepmd-kit_rc` channel to install DeePMD-kit release candidates.
 - `DEEPMD_VERSION`: The version of DeePMD-kit getting installed, can be used to up- or down-grade.
-
