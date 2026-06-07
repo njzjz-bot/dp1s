@@ -39,17 +39,27 @@ case "${country}" in
   CN)
     logging "Location: ${country}"
     conda_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/"
+    deepmd_rc_channel="https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/label/deepmd-kit_rc/"
     export PIXI_REPOURL=https://ghfast.top/https://github.com/prefix-dev/pixi
     ;;
   "")
     logging "Location detection failed; falling back to conda-forge"
     conda_channel="conda-forge"
+    deepmd_rc_channel="conda-forge/label/deepmd-kit_rc"
     ;;
   *)
     logging "Location: ${country}"
     conda_channel="conda-forge"
+    deepmd_rc_channel="conda-forge/label/deepmd-kit_rc"
     ;;
 esac
+
+channel_args=(--channel="$conda_channel")
+if [[ -v DP1S_DEEPMD_RC ]]; then
+  logging "Enable DeePMD-kit release candidate channel"
+  channel_args+=(--channel="$deepmd_rc_channel")
+fi
+channel_args+=(--channel=njzjz)
 
 # 2. install pixi
 ((progress++))
@@ -78,8 +88,7 @@ $DP1S_BIN_PATH/pixi global install \
   --with flax \
   --with orbax-checkpoint \
   --with njzjz::libdevice-hack-for-tensorflow \
-  --channel=$conda_channel \
-  --channel=njzjz
+  "${channel_args[@]}"
 
 # 4. check the installation
 ((progress++))

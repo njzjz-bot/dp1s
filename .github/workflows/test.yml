@@ -11,6 +11,92 @@ permissions:
   contents: read
 
 jobs:
+  test-channel-args:
+    name: Test channel args (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: default
+            country: ""
+            rc: false
+            expected_channels: "--channel=conda-forge --channel=njzjz"
+          - name: default RC
+            country: ""
+            rc: true
+            expected_channels: "--channel=conda-forge --channel=conda-forge/label/deepmd-kit_rc --channel=njzjz"
+          - name: China
+            country: CN
+            rc: false
+            expected_channels: "--channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/ --channel=njzjz"
+          - name: China RC
+            country: CN
+            rc: true
+            expected_channels: "--channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/ --channel=https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/label/deepmd-kit_rc/ --channel=njzjz"
+    env:
+      DP1S_COUNTRY: ${{ matrix.country }}
+      DP1S_NO_PATH_UPDATE: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install mocks
+        run: |
+          set -euo pipefail
+          mock_bin="${RUNNER_TEMP}/mock-bin"
+          mkdir -p "${mock_bin}"
+          cat > "${mock_bin}/curl" <<'EOF'
+          #!/bin/sh
+          cat <<'INSTALLER'
+          #!/bin/sh
+          set -eu
+          mkdir -p "${PIXI_HOME}/bin"
+          cat > "${PIXI_HOME}/bin/pixi" <<'PIXI'
+          #!/bin/sh
+          set -eu
+          printf '%s\n' "$@" > "${DP1S_PIXI_ARGS_FILE}"
+          mkdir -p "${PIXI_HOME}/bin"
+          cat > "${PIXI_HOME}/bin/dp" <<'DP'
+          #!/bin/sh
+          echo "DeepMD-kit mock"
+          DP
+          chmod +x "${PIXI_HOME}/bin/dp"
+          cat > "${PIXI_HOME}/bin/lmp" <<'LMP'
+          #!/bin/sh
+          echo "pair deepmd"
+          LMP
+          chmod +x "${PIXI_HOME}/bin/lmp"
+          cat > "${PIXI_HOME}/bin/mpirun" <<'MPIRUN'
+          #!/bin/sh
+          echo "mpirun mock"
+          MPIRUN
+          chmod +x "${PIXI_HOME}/bin/mpirun"
+          PIXI
+          chmod +x "${PIXI_HOME}/bin/pixi"
+          INSTALLER
+          EOF
+          chmod +x "${mock_bin}/curl"
+          echo "${mock_bin}" >> "${GITHUB_PATH}"
+
+      - name: Run script with mocked installer
+        run: |
+          set -euo pipefail
+          export DP1S_HOME="${RUNNER_TEMP}/dp1s"
+          export DP1S_PIXI_ARGS_FILE="${RUNNER_TEMP}/pixi-args.txt"
+          if [[ "${{ matrix.rc }}" == "true" ]]; then
+            export DP1S_DEEPMD_RC=1
+          fi
+          bash dp1s.sh
+
+          actual_channels=$(grep '^--channel=' "${DP1S_PIXI_ARGS_FILE}" | tr '\n' ' ' | sed 's/ $//')
+          expected_channels='${{ matrix.expected_channels }}'
+          if [[ "${actual_channels}" != "${expected_channels}" ]]; then
+            echo "Expected channels: ${expected_channels}"
+            echo "Actual channels:   ${actual_channels}"
+            exit 1
+          fi
+
   test:
     name: Test dp1s.sh (${{ matrix.name }})
     runs-on: ubuntu-latest
