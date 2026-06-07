@@ -35,7 +35,7 @@ conda_mirror_names() {
   if [[ -n "${DP1S_CONDA_MIRRORS:-}" ]]; then
     echo "${DP1S_CONDA_MIRRORS}" | tr ',' ' '
   else
-    echo "ustc tuna bfsu nju conda-forge"
+    echo "ustc tuna bfsu nju pku hit njtech nyist ha sjtu sustech zju lzu cqupt conda-forge"
   fi
 }
 
@@ -43,7 +43,7 @@ pixi_mirror_names() {
   if [[ -n "${DP1S_PIXI_MIRRORS:-}" ]]; then
     echo "${DP1S_PIXI_MIRRORS}" | tr ',' ' '
   else
-    echo "github ghfast"
+    echo "github ghfast ghproxy ghproxy-v4 ghproxy-v6 ghproxy-cdn"
   fi
 }
 
@@ -54,6 +54,16 @@ conda_mirror_base() {
     tuna) echo "https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/" ;;
     bfsu) echo "https://mirrors.bfsu.edu.cn/anaconda/cloud/conda-forge/" ;;
     nju) echo "https://mirror.nju.edu.cn/anaconda/cloud/conda-forge/" ;;
+    pku) echo "https://mirrors.pku.edu.cn/anaconda/cloud/conda-forge/" ;;
+    hit) echo "https://mirrors.hit.edu.cn/anaconda/cloud/conda-forge/" ;;
+    njtech) echo "https://mirrors.njtech.edu.cn/anaconda/cloud/conda-forge/" ;;
+    nyist) echo "https://mirror.nyist.edu.cn/anaconda/cloud/conda-forge/" ;;
+    ha) echo "https://mirrors.ha.edu.cn/anaconda/cloud/conda-forge/" ;;
+    sjtu) echo "https://mirror.sjtu.edu.cn/anaconda/cloud/conda-forge/" ;;
+    sustech) echo "https://mirrors.sustech.edu.cn/anaconda/cloud/conda-forge/" ;;
+    zju) echo "https://mirrors.zju.edu.cn/anaconda/cloud/conda-forge/" ;;
+    lzu) echo "https://mirror.lzu.edu.cn/anaconda/cloud/conda-forge/" ;;
+    cqupt) echo "https://mirrors.cqupt.edu.cn/anaconda/cloud/conda-forge/" ;;
     http://*|https://*) echo "$1" ;;
     *) return 1 ;;
   esac
@@ -72,6 +82,10 @@ pixi_mirror_base() {
   case "$1" in
     github|official) echo "https://github.com/prefix-dev/pixi" ;;
     ghfast) echo "https://ghfast.top/https://github.com/prefix-dev/pixi" ;;
+    ghproxy) echo "https://gh-proxy.org/https://github.com/prefix-dev/pixi" ;;
+    ghproxy-v4) echo "https://v4.gh-proxy.org/https://github.com/prefix-dev/pixi" ;;
+    ghproxy-v6) echo "https://v6.gh-proxy.org/https://github.com/prefix-dev/pixi" ;;
+    ghproxy-cdn) echo "https://cdn.gh-proxy.org/https://github.com/prefix-dev/pixi" ;;
     http://*|https://*) echo "$1" ;;
     *) return 1 ;;
   esac
